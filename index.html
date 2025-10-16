@@ -2,129 +2,157 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Last 10 Orders - Broadway Grabber</title>
   <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f7f9fa;
-      margin: 0;
-      padding: 0;
+    :root{
+      --bg:#f7f9fa;
+      --card-bg:#fff;
+      --accent-1:#25D366;
+      --accent-2:#128C7E;
+      --text:#22223b;
+      --muted:#888;
+      --radius:12px;
     }
+
+    html,body{
+      height:100%;
+      margin:0;
+      padding:0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
     h2 {
       text-align: center;
-      margin-top: 30px;
-      color: #22223b;
-      font-size: 2rem;
-      letter-spacing: 1px;
+      margin: 28px 16px 8px;
+      color: var(--text);
+      font-size: clamp(1.25rem, 2.2vw, 2rem);
+      letter-spacing: 0.6px;
     }
+
     #records {
-      max-width: 900px;
-      margin: 30px auto;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(34,34,59,0.08);
-      padding: 24px 32px;
+      max-width: 980px;
+      margin: 18px auto 80px;
+      background: var(--card-bg);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: 0 6px 30px rgba(34,34,59,0.06);
+      padding: 20px;
+      box-sizing: border-box;
     }
+
     .order-card {
       display: flex;
+      gap: 12px;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(90deg, #25D366 0%, #128C7E 100%);
+      background: linear-gradient(90deg, var(--accent-1) 0%, var(--accent-2) 100%);
       color: #fff;
       border-radius: 10px;
-      margin-bottom: 18px;
-      padding: 18px 24px;
-      box-shadow: 0 2px 8px rgba(34,34,59,0.08);
-      transition: transform 0.2s;
+      margin-bottom: 14px;
+      padding: 14px 18px;
+      box-shadow: 0 2px 12px rgba(34,34,59,0.08);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      flex-wrap: nowrap;
     }
     .order-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 24px rgba(34,34,59,0.12);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(34,34,59,0.12);
     }
+
     .order-info {
-      flex: 2;
+      flex: 1 1 60%;
+      min-width: 0;
+      overflow: hidden;
     }
     .order-id {
-      font-size: 1.2rem;
-      font-weight: bold;
-      letter-spacing: 1px;
+      font-size: clamp(1rem, 1.6vw, 1.15rem);
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .order-amount {
-      font-size: 1.1rem;
-      font-weight: 500;
+      font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+      font-weight: 600;
       margin-top: 6px;
     }
     .order-address {
-      font-size: 1rem;
-      margin-top: 4px;
-      opacity: 0.85;
+      font-size: clamp(0.9rem, 1.6vw, 1rem);
+      margin-top: 6px;
+      opacity: 0.95;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
+
     .customer-info {
-      flex: 1;
+      flex: 0 0 220px;
       text-align: right;
+      min-width: 120px;
+      box-sizing: border-box;
     }
     .customer-name {
-      font-size: 1.1rem;
-      font-weight: bold;
+      font-size: clamp(0.98rem, 1.6vw, 1.06rem);
+      font-weight: 700;
     }
     .customer-phone {
-      font-size: 1rem;
-      margin-top: 4px;
+      font-size: clamp(0.9rem, 1.6vw, 1rem);
+      margin-top: 6px;
     }
     .customer-email {
-      font-size: 0.95rem;
-      margin-top: 2px;
-      opacity: 0.8;
+      font-size: 0.92rem;
+      margin-top: 4px;
+      opacity: 0.9;
+      word-break: break-all;
     }
+
     #notification {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25D366;
+      bottom: 18px;
+      right: 18px;
+      background-color: var(--accent-1);
       color: white;
-      padding: 14px 22px;
+      padding: 12px 18px;
       border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
       display: none;
       font-family: inherit;
-      font-size: 16px;
-      font-weight: bold;
-      letter-spacing: 1px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
       z-index: 1000;
+      max-width: calc(100% - 64px);
+      box-sizing: border-box;
     }
-    @media (max-width: 600px) {
-      #records {
-        padding: 12px 6px;
-      }
-      .order-card {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 12px 10px;
-      }
-      .customer-info {
-        text-align: left;
-        margin-top: 10px;
-      }
-    }
-      .settings-btn {
+
+    .settings-btn {
       position: fixed;
-      top: 24px;
-      right: 32px;
-      background: #128C7E;
+      top: 20px;
+      right: 20px;
+      background: var(--accent-2);
       color: #fff;
       border: none;
       border-radius: 50%;
       width: 48px;
       height: 48px;
-      font-size: 1.7rem;
+      font-size: 1.4rem;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(34,34,59,0.12);
+      box-shadow: 0 6px 22px rgba(34,34,59,0.12);
       z-index: 1001;
-      transition: background 0.2s;
+      transition: background 0.16s ease, transform 0.12s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .settings-btn:hover {
-      background: #25D366;
-    }
+    .settings-btn:hover { background: var(--accent-1); transform: translateY(-2px); }
+
     .modal-bg {
       display: none;
       position: fixed;
@@ -133,76 +161,100 @@
       z-index: 1002;
       justify-content: center;
       align-items: center;
+      padding: 18px;
     }
     .modal {
       background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 4px 24px rgba(34,34,59,0.18);
-      padding: 32px 28px;
-      min-width: 320px;
-      max-width: 90vw;
+      border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(34,34,59,0.18);
+      padding: 22px;
+      width: 420px;
+      max-width: 100%;
       text-align: center;
       position: relative;
+      box-sizing: border-box;
     }
     .modal h3 {
-      margin-top: 0;
-      color: #128C7E;
-      font-size: 1.3rem;
-      margin-bottom: 18px;
+      margin: 6px 0 12px;
+      color: var(--accent-2);
+      font-size: 1.15rem;
     }
     .modal input[type="text"] {
-      width: 90%;
+      width: 100%;
       padding: 10px;
       font-size: 1rem;
-      border: 1px solid #128C7E;
-      border-radius: 6px;
-      margin-bottom: 18px;
+      border: 1px solid var(--accent-2);
+      border-radius: 8px;
+      margin-bottom: 14px;
       outline: none;
+      box-sizing: border-box;
     }
     .modal button {
-      background: #25D366;
+      background: var(--accent-1);
       color: #fff;
       border: none;
-      border-radius: 6px;
-      padding: 10px 24px;
+      border-radius: 8px;
+      padding: 10px 18px;
       font-size: 1rem;
       cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
+      font-weight: 700;
+      transition: background 0.16s;
     }
-    .modal button:hover {
-      background: #128C7E;
-    }
+    .modal button:hover { background: var(--accent-2); }
     .close-modal {
       position: absolute;
-      top: 12px;
-      right: 18px;
-      font-size: 1.3rem;
-      color: #128C7E;
+      top: 10px;
+      right: 12px;
+      font-size: 1.2rem;
+      color: var(--accent-2);
       background: none;
       border: none;
       cursor: pointer;
     }
+
+    /* Small screens adjustments */
+    @media (max-width: 700px) {
+      #records { margin: 12px 12px 90px; padding: 14px; }
+      .order-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px;
+      }
+      .customer-info { text-align: left; flex: 1 1 auto; margin-top: 8px; }
+      .order-id, .order-amount, .order-address { white-space: normal; -webkit-line-clamp: unset; display:block; }
+      .settings-btn { width:44px; height:44px; right:14px; top:14px; font-size:1.25rem; }
+      #notification { left: 14px; right: 14px; bottom: 14px; text-align:center; }
+    }
+
+    @media (max-width:420px) {
+      .customer-info { font-size: 0.95rem; }
+      .order-card { padding: 10px; border-radius:10px; }
+      h2 { font-size: 1.15rem; margin-top: 18px; }
+    }
   </style>
 </head>
 <body>
-<button class="settings-btn" id="settingsBtn" title="Settings">&#9881;</button>
-  <div class="modal-bg" id="modalBg">
-    <div class="modal">
-      <button class="close-modal" id="closeModalBtn" title="Close">&times;</button>
+<button class="settings-btn" id="settingsBtn" title="Settings" aria-label="Settings">&#9881;</button>
+
+  <div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <button class="close-modal" id="closeModalBtn" title="Close" aria-label="Close">&times;</button>
       <h3>API Base URL Configuration</h3>
-      <input type="text" id="apiUrlInput" placeholder="Enter API Base URL">
+      <input type="text" id="apiUrlInput" placeholder="Enter API Base URL (e.g. http://localhost:8000)">
       <br>
       <button id="saveApiUrlBtn">Save</button>
     </div>
   </div>
+
   <h2>Last 10 Orders</h2>
   <div id="records"></div>
-  <div id="notification">🔔 New records found!</div>
-  <audio id="notifSound" src="mixkit-arabian-mystery-harp-notification-2489.wav" preload="auto"></audio>
-  <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa7b7b.mp3" preload="auto"></audio>
- 
- 
+  <div id="notification" role="status" aria-live="polite">🔔 New records found!</div>
+
+  <audio id="notifSound" preload="auto">
+    <source src="mixkit-arabian-mystery-harp-notification-2489.wav" type="audio/wav">
+    <source src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa7b7b.mp3" type="audio/mpeg">
+  </audio>
+
  <script>
     const settingsBtn = document.getElementById('settingsBtn');
     const modalBg = document.getElementById('modalBg');
@@ -221,10 +273,12 @@
     settingsBtn.onclick = () => {
       apiUrlInput.value = getApiUrl();
       modalBg.style.display = 'flex';
+      modalBg.setAttribute('aria-hidden', 'false');
     };
 
     closeModalBtn.onclick = () => {
       modalBg.style.display = 'none';
+      modalBg.setAttribute('aria-hidden', 'true');
     };
 
     saveApiUrlBtn.onclick = () => {
@@ -232,6 +286,7 @@
       if (url) {
         setApiUrl(url);
         modalBg.style.display = 'none';
+        modalBg.setAttribute('aria-hidden', 'true');
         showNotification("✅ API URL updated!");
         fetchRecords(); // reload with new API
       }
@@ -240,24 +295,22 @@
     window.onclick = function(event) {
       if (event.target === modalBg) {
         modalBg.style.display = 'none';
+        modalBg.setAttribute('aria-hidden', 'true');
       }
     };
 
-
-
-    const API_URL =  getApiUrl() + '/api/last-10-records';
     let previousData = [];
     let originalTitle = document.title;
     let titleTimeout;
 
     async function fetchRecords() {
       try {
+        const API_URL = getApiUrl().replace(/\/+$/, '') + '/api/last-10-records';
         const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
         const result = await response.json();
         const orders = result.orders || [];
 
-        // Compare with previousData
         const newDataString = JSON.stringify(orders);
         const oldDataString = JSON.stringify(previousData);
 
@@ -276,20 +329,20 @@
     function renderRecords(orders) {
       const container = document.getElementById('records');
       if (!orders.length) {
-        container.innerHTML = '<p style="text-align:center;color:#888;">No records found.</p>';
+        container.innerHTML = '<p style="text-align:center;color:var(--muted);">No records found.</p>';
         return;
       }
       container.innerHTML = orders.map(order => `
-        <div class="order-card">
+        <div class="order-card" role="article" aria-label="Order ${order.order_id}">
           <div class="order-info">
             <div class="order-id">Order #${order.order_id}</div>
             <div class="order-amount">💸 Amount: <b>Rs. ${order.order_amount}</b></div>
-            <div class="order-address">📍 ${order.delivery_address}</div>
+            <div class="order-address">📍 ${order.delivery_address || 'No address'}</div>
           </div>
           <div class="customer-info">
-            <div class="customer-name">👤 ${order.customer.name}</div>
-            <div class="customer-phone">📞 ${order.customer.phone}</div>
-            <div class="customer-email">✉️ ${order.customer.email || '<i>No email</i>'}</div>
+            <div class="customer-name">👤 ${(order.customer && order.customer.name) || 'Unknown'}</div>
+            <div class="customer-phone">📞 ${(order.customer && order.customer.phone) || 'N/A'}</div>
+            <div class="customer-email">✉️ ${ (order.customer && order.customer.email) ? order.customer.email : '<i>No email</i>' }</div>
           </div>
         </div>
       `).join('');
@@ -306,8 +359,9 @@
 
     function playNotificationSound() {
       const sound = document.getElementById('notifSound');
+      if (!sound) return;
       sound.currentTime = 0;
-      sound.play();
+      sound.play().catch(()=>{/* autoplay may be blocked by browser */});
     }
 
     function showTitleNotification(message) {
