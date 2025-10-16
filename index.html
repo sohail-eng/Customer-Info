@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Last 10 Orders - Broadway Grabber</title>
+  <title>New Orders - Broadway Grabber</title>
   <style>
     :root{
       --bg:#f7f9fa;
@@ -305,7 +305,7 @@
 
     async function fetchRecords() {
       try {
-        const API_URL = getApiUrl().replace(/\/+$/, '') + '/api/last-10-records';
+        const API_URL = getApiUrl().replace(/\/+$/, '') + '/api/recent-records';
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
         const result = await response.json();
