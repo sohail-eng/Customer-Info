@@ -246,7 +246,7 @@
     </div>
   </div>
 
-  <h2>Last 10 Orders</h2>
+  <h2>Resent Orders</h2>
   <div id="records"></div>
   <div id="notification" role="status" aria-live="polite">🔔 New records found!</div>
 
@@ -263,7 +263,7 @@
     const saveApiUrlBtn = document.getElementById('saveApiUrlBtn');
 
     function getApiUrl() {
-      return localStorage.getItem('baseApiUrl') || 'http://localhost:8000';
+      return localStorage.getItem('baseApiUrl') || 'http://sohail.loca.lt';
     }
 
     function setApiUrl(url) {
