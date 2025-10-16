@@ -299,7 +299,7 @@
       }
     };
 
-    let previousData = [];
+    let previousData = null;
     let originalTitle = document.title;
     let titleTimeout;
 
@@ -312,9 +312,9 @@
         const orders = result.orders || [];
 
         const newDataString = JSON.stringify(orders);
-        const oldDataString = JSON.stringify(previousData);
+        const oldDataString = previousData === null ? null : JSON.stringify(previousData);
 
-        if (newDataString !== oldDataString) {
+        if (previousData === null || newDataString !== oldDataString) {
           showNotification("🔔 New records found!");
           playNotificationSound();
           showTitleNotification("🔔 New records found!");
