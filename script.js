@@ -304,5 +304,9 @@ function showTitleNotification(message) {
     }, 5000);
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+const baseUrl = urlParams.get('base_url');
+setApiUrl(baseUrl);
+
 fetchRecords();
 setInterval(fetchRecords, 20000);
