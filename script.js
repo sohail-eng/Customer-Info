@@ -308,8 +308,8 @@ const urlParams = new URLSearchParams(window.location.search);
 const baseUrl = urlParams.get('base_url');
 if (baseUrl) {
     setApiUrl(baseUrl);
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.location.replace(cleanUrl);
+    // const cleanUrl = window.location.origin + window.location.pathname;
+    // window.location.replace(cleanUrl);
 }
 
 fetchRecords();
