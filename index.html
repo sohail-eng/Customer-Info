@@ -332,21 +332,57 @@
         container.innerHTML = '<p style="text-align:center;color:var(--muted);">No records found.</p>';
         return;
       }
-      container.innerHTML = orders.map(order => `
-        <div class="order-card" role="article" aria-label="Order ${order.order_id}">
-          <div class="order-info">
-            <div class="order-id">Order #${order.order_id}</div>
-            <div class="order-amount">💸 Amount: <b>Rs. ${order.order_amount}</b></div>
-            <div class="order-address">📍 ${order.delivery_address || 'No address'}</div>
+
+      function sanitizeTel(raw) {
+        if (!raw) return '';
+        // keep digits and leading plus for tel: links
+        return raw.trim().replace(/[^+\d]/g, '');
+      }
+      function sanitizeWa(raw) {
+        if (!raw) return '';
+
+        // Remove all non-digit characters
+        let digits = raw.trim().replace(/\D/g, '');
+
+        // If the number starts with '0', replace it with '92'
+        if (digits.startsWith('0')) {
+          digits = '92' + digits.slice(1);
+        }
+
+        return digits;
+      }
+
+      container.innerHTML = orders.map(order => {
+        const phoneRaw = (order.customer && order.customer.phone) || '';
+        const telHref = sanitizeTel(phoneRaw);
+        const waDigits = sanitizeWa(phoneRaw);
+        const phoneDisplay = phoneRaw || 'N/A';
+
+        const phoneLink = telHref
+          ? `<a href="tel:${telHref}" aria-label="Call ${phoneDisplay}" style="color:inherit;text-decoration:underline;">📞 ${phoneDisplay}</a>`
+          : `📞 ${phoneDisplay}`;
+
+        const waLink = waDigits
+          ? ` <a href="https://wa.me/${waDigits}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp ${phoneDisplay}" style="color:inherit;margin-left:8px;text-decoration:none;">🟢</a>`
+          : '';
+
+        return `
+          <div class="order-card" role="article" aria-label="Order ${order.order_id}">
+            <div class="order-info">
+              <div class="order-id">Order #${order.order_id}</div>
+              <div class="order-amount">💸 Amount: <b>Rs. ${order.order_amount}</b></div>
+              <div class="order-address">📍 ${order.delivery_address || 'No address'}</div>
+            </div>
+            <div class="customer-info">
+              <div class="customer-name">👤 ${(order.customer && order.customer.name) || 'Unknown'}</div>
+              <div class="customer-phone">${phoneLink}${waLink}</div>
+              <div class="customer-email">✉️ ${ (order.customer && order.customer.email) ? order.customer.email : '<i>No email</i>' }</div>
+            </div>
           </div>
-          <div class="customer-info">
-            <div class="customer-name">👤 ${(order.customer && order.customer.name) || 'Unknown'}</div>
-            <div class="customer-phone">📞 ${(order.customer && order.customer.phone) || 'N/A'}</div>
-            <div class="customer-email">✉️ ${ (order.customer && order.customer.email) ? order.customer.email : '<i>No email</i>' }</div>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
+
 
     function showNotification(message) {
       const notification = document.getElementById('notification');
