@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Last 10 Orders - Broadway Grabber</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f7f9fa;
+      margin: 0;
+      padding: 0;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 30px;
+      color: #22223b;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    #records {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(34,34,59,0.08);
+      padding: 24px 32px;
+    }
+    .order-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, #25D366 0%, #128C7E 100%);
+      color: #fff;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      padding: 18px 24px;
+      box-shadow: 0 2px 8px rgba(34,34,59,0.08);
+      transition: transform 0.2s;
+    }
+    .order-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 24px rgba(34,34,59,0.12);
+    }
+    .order-info {
+      flex: 2;
+    }
+    .order-id {
+      font-size: 1.2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .order-amount {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-top: 6px;
+    }
+    .order-address {
+      font-size: 1rem;
+      margin-top: 4px;
+      opacity: 0.85;
+    }
+    .customer-info {
+      flex: 1;
+      text-align: right;
+    }
+    .customer-name {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    .customer-phone {
+      font-size: 1rem;
+      margin-top: 4px;
+    }
+    .customer-email {
+      font-size: 0.95rem;
+      margin-top: 2px;
+      opacity: 0.8;
+    }
+    #notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25D366;
+      color: white;
+      padding: 14px 22px;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+      display: none;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      z-index: 1000;
+    }
+    @media (max-width: 600px) {
+      #records {
+        padding: 12px 6px;
+      }
+      .order-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 10px;
+      }
+      .customer-info {
+        text-align: left;
+        margin-top: 10px;
+      }
+    }
+      .settings-btn {
+      position: fixed;
+      top: 24px;
+      right: 32px;
+      background: #128C7E;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.7rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(34,34,59,0.12);
+      z-index: 1001;
+      transition: background 0.2s;
+    }
+    .settings-btn:hover {
+      background: #25D366;
+    }
+    .modal-bg {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(34,34,59,0.18);
+      z-index: 1002;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(34,34,59,0.18);
+      padding: 32px 28px;
+      min-width: 320px;
+      max-width: 90vw;
+      text-align: center;
+      position: relative;
+    }
+    .modal h3 {
+      margin-top: 0;
+      color: #128C7E;
+      font-size: 1.3rem;
+      margin-bottom: 18px;
+    }
+    .modal input[type="text"] {
+      width: 90%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #128C7E;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      outline: none;
+    }
+    .modal button {
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .modal button:hover {
+      background: #128C7E;
+    }
+    .close-modal {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 1.3rem;
+      color: #128C7E;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<button class="settings-btn" id="settingsBtn" title="Settings">&#9881;</button>
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <button class="close-modal" id="closeModalBtn" title="Close">&times;</button>
+      <h3>API Base URL Configuration</h3>
+      <input type="text" id="apiUrlInput" placeholder="Enter API Base URL">
+      <br>
+      <button id="saveApiUrlBtn">Save</button>
+    </div>
+  </div>
+  <h2>Last 10 Orders</h2>
+  <div id="records"></div>
+  <div id="notification">🔔 New records found!</div>
+  <audio id="notifSound" src="mixkit-arabian-mystery-harp-notification-2489.wav" preload="auto"></audio>
+  <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa7b7b.mp3" preload="auto"></audio>
+ 
+ 
+ <script>
+    const settingsBtn = document.getElementById('settingsBtn');
+    const modalBg = document.getElementById('modalBg');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const apiUrlInput = document.getElementById('apiUrlInput');
+    const saveApiUrlBtn = document.getElementById('saveApiUrlBtn');
+
+    function getApiUrl() {
+      return localStorage.getItem('baseApiUrl') || 'http://localhost:8000';
+    }
+
+    function setApiUrl(url) {
+      localStorage.setItem('baseApiUrl', url);
+    }
+
+    settingsBtn.onclick = () => {
+      apiUrlInput.value = getApiUrl();
+      modalBg.style.display = 'flex';
+    };
+
+    closeModalBtn.onclick = () => {
+      modalBg.style.display = 'none';
+    };
+
+    saveApiUrlBtn.onclick = () => {
+      const url = apiUrlInput.value.trim();
+      if (url) {
+        setApiUrl(url);
+        modalBg.style.display = 'none';
+        showNotification("✅ API URL updated!");
+        fetchRecords(); // reload with new API
+      }
+    };
+
+    window.onclick = function(event) {
+      if (event.target === modalBg) {
+        modalBg.style.display = 'none';
+      }
+    };
+
+
+
+    const API_URL =  getApiUrl() + '/api/last-10-records';
+    let previousData = [];
+    let originalTitle = document.title;
+    let titleTimeout;
+
+    async function fetchRecords() {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const result = await response.json();
+        const orders = result.orders || [];
+
+        // Compare with previousData
+        const newDataString = JSON.stringify(orders);
+        const oldDataString = JSON.stringify(previousData);
+
+        if (newDataString !== oldDataString) {
+          showNotification("🔔 New records found!");
+          playNotificationSound();
+          showTitleNotification("🔔 New records found!");
+          previousData = orders;
+          renderRecords(orders);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+      }
+    }
+
+    function renderRecords(orders) {
+      const container = document.getElementById('records');
+      if (!orders.length) {
+        container.innerHTML = '<p style="text-align:center;color:#888;">No records found.</p>';
+        return;
+      }
+      container.innerHTML = orders.map(order => `
+        <div class="order-card">
+          <div class="order-info">
+            <div class="order-id">Order #${order.order_id}</div>
+            <div class="order-amount">💸 Amount: <b>Rs. ${order.order_amount}</b></div>
+            <div class="order-address">📍 ${order.delivery_address}</div>
+          </div>
+          <div class="customer-info">
+            <div class="customer-name">👤 ${order.customer.name}</div>
+            <div class="customer-phone">📞 ${order.customer.phone}</div>
+            <div class="customer-email">✉️ ${order.customer.email || '<i>No email</i>'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 5000);
+    }
+
+    function playNotificationSound() {
+      const sound = document.getElementById('notifSound');
+      sound.currentTime = 0;
+      sound.play();
+    }
+
+    function showTitleNotification(message) {
+      document.title = message + " | " + originalTitle;
+      clearTimeout(titleTimeout);
+      titleTimeout = setTimeout(() => {
+        document.title = originalTitle;
+      }, 5000);
+    }
+
+    fetchRecords();
+    setInterval(fetchRecords, 20000);
+  </script>
+</body>
+</html>
