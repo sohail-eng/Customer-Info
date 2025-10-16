@@ -86,6 +86,7 @@ function openOrderModal(order) {
         if (!raw) return '';
         return raw.trim().replace(/[^+\d]/g, '');
     }
+    
     function sanitizeWa(raw) {
         if (!raw) return '';
         let digits = raw.trim().replace(/\D/g, '');
@@ -95,23 +96,74 @@ function openOrderModal(order) {
         return digits;
     }
     
+    function formatProductsList(items) {
+        return items
+            .map(item => `- 🍕 ${item.product_name} (${item.category_name})\n   Quantity: ${item.quantity} | Price: Rs. ${item.price}`)
+            .join('\n');
+    }
+    
+    function generateWhatsAppMessage(order) {
+        const customerName = (order.customer && order.customer.name) || 'Valued Customer';
+        const productsText = formatProductsList(order.items);
+        const currentDate = new Date().toLocaleDateString('en-PK', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        const message = `Assalam o Alaikum ${customerName},
+
+Aap ka order Broadway Pizza ke saath successfully place ho chuka hai — thank you for trusting us! 🙏
+
+📋 Order Details:
+Order ID: #${order.order_id}
+Total Amount: Rs. ${order.order_amount}
+
+🍕 Selected Items:
+${productsText}
+
+📍 Delivery Address: ${order.delivery_address}
+
+⏰ Estimated Delivery: Within 30-45 minutes
+
+🎉 Special Offer for You!
+- Agar aap online payment karte hain, toh enjoy karein *50% OFF* — sirf aaj ke din ke liye!
+
+✅ Online Payment Kryn aur Bilkul Half Price Mein Pizaz Ka Maza Lein!
+
+Hum aap ki service ke liye committed hain. Kisi bhi sawal ke liye hume contact karein.
+
+Shukriya Broadway Pizza ko choose karne ke liye! 🍕`;
+        
+        return encodeURIComponent(message);
+    }
+    
     const telHref = sanitizeTel(phoneRaw);
     const waDigits = sanitizeWa(phoneRaw);
     const phoneDisplay = phoneRaw || 'N/A';
     const encoded = encodeURIComponent(order.delivery_address || '');
     const mapLink = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
+    
+    const whatsappMessage = generateWhatsAppMessage(order);
+    const waLink = waDigits
+        ? `<a href="https://wa.me/${waDigits}?text=${whatsappMessage}" target="_blank" rel="noopener noreferrer" class="modal-link">🟢 WhatsApp</a>`
+        : '';
 
     const phoneLink = telHref
         ? `<a href="tel:${telHref}" class="modal-link">📞 ${phoneDisplay}</a>`
         : `📞 ${phoneDisplay}`;
 
-    const waLink = waDigits
-        ? `<a href="https://wa.me/${waDigits}" target="_blank" rel="noopener noreferrer" class="modal-link">🟢 WhatsApp</a>`
-        : '';
-
     const addressLink = order.delivery_address
         ? `<a href="${mapLink}" target="_blank" rel="noopener noreferrer" class="modal-link">📍 ${order.delivery_address}</a>`
         : `📍 No address`;
+
+    const itemsHTML = order.items
+        .map(item => `<div style="margin: 8px 0; padding: 8px; background: #f5f5f5; border-radius: 4px;">
+            <strong>${item.product_name}</strong> <span style="color: #666; font-size: 0.9em;">(${item.category_name})</span><br>
+            Quantity: ${item.quantity} | Price: Rs. ${item.price}
+        </div>`)
+        .join('');
 
     const modalContent = document.getElementById('orderModalContent');
     modalContent.innerHTML = `
@@ -130,6 +182,13 @@ function openOrderModal(order) {
             </div>
             <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 12px 0;">
             <div class="detail-row">
+                <span class="detail-label">Items Ordered:</span>
+            </div>
+            <div style="margin: 12px 0;">
+                ${itemsHTML}
+            </div>
+            <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 12px 0;">
+            <div class="detail-row">
                 <span class="detail-label">Customer Name:</span>
                 <span class="detail-value">👤 ${(order.customer && order.customer.name) || 'Unknown'}</span>
             </div>
@@ -140,7 +199,7 @@ function openOrderModal(order) {
             ${waLink ? `<div class="detail-row"><span class="detail-label">WhatsApp:</span><span class="detail-value">${waLink}</span></div>` : ''}
             <div class="detail-row">
                 <span class="detail-label">Email:</span>
-                <span class="detail-value">${(order.customer && order.customer.email) ? order.customer.email : '<i>No email</i>'}</span>
+                <span class="detail-value">${(order.customer && order.customer.email) ? order.customer.email : '<i>No email provided</i>'}</span>
             </div>
         </div>
     `;
