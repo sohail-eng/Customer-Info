@@ -81,12 +81,12 @@ async function fetchRecords() {
 
 function openOrderModal(order) {
     const phoneRaw = (order.customer && order.customer.phone) || '';
-    
+
     function sanitizeTel(raw) {
         if (!raw) return '';
         return raw.trim().replace(/[^+\d]/g, '');
     }
-    
+
     function sanitizeWa(raw) {
         if (!raw) return '';
         let digits = raw.trim().replace(/\D/g, '');
@@ -95,23 +95,23 @@ function openOrderModal(order) {
         }
         return digits;
     }
-    
+
     function formatProductsList(items) {
         return items
             .map(item => `- 🍕 ${item.product_name} (${item.category_name})\n   Quantity: ${item.quantity} | Price: Rs. ${item.price}`)
             .join('\n');
     }
-    
+
     function generateWhatsAppMessage(order) {
         const customerName = (order.customer && order.customer.name) || 'Valued Customer';
         const productsText = formatProductsList(order.items);
-        const currentDate = new Date().toLocaleDateString('en-PK', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+        const currentDate = new Date().toLocaleDateString('en-PK', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
-        
+
         const message = `Assalam o Alaikum ${customerName},
 
 Aap ka order Broadway Pizza ke saath successfully place ho chuka hai — thank you for trusting us! 🙏
@@ -135,16 +135,16 @@ ${productsText}
 Hum aap ki service ke liye committed hain. Kisi bhi sawal ke liye hume contact karein.
 
 Shukriya Broadway Pizza ko choose karne ke liye! 🍕`;
-        
+
         return encodeURIComponent(message);
     }
-    
+
     const telHref = sanitizeTel(phoneRaw);
     const waDigits = sanitizeWa(phoneRaw);
     const phoneDisplay = phoneRaw || 'N/A';
     const encoded = encodeURIComponent(order.delivery_address || '');
     const mapLink = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
-    
+
     const whatsappMessage = generateWhatsAppMessage(order);
     const waLink = waDigits
         ? `<a href="https://wa.me/${waDigits}?text=${whatsappMessage}" target="_blank" rel="noopener noreferrer" class="modal-link">🟢 WhatsApp</a>`
@@ -306,8 +306,10 @@ function showTitleNotification(message) {
 
 const urlParams = new URLSearchParams(window.location.search);
 const baseUrl = urlParams.get('base_url');
-if (baseUrl){
-    window.location.replace(baseUrl.split('?')[0]);
+if (baseUrl) {
+    setApiUrl(baseUrl);
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.location.replace(cleanUrl);
 }
 
 fetchRecords();
