@@ -306,7 +306,9 @@ function showTitleNotification(message) {
 
 const urlParams = new URLSearchParams(window.location.search);
 const baseUrl = urlParams.get('base_url');
-setApiUrl(baseUrl);
+if (baseUrl){
+    window.location.replace(baseUrl.split('?')[0]);
+}
 
 fetchRecords();
 setInterval(fetchRecords, 20000);
