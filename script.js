@@ -3,11 +3,12 @@ const modalBg = document.getElementById('modalBg');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const apiUrlInput = document.getElementById('apiUrlInput');
 const saveApiUrlBtn = document.getElementById('saveApiUrlBtn');
+const AuthenticateBtn = document.getElementById('AuthenticateBtn');
 const orderModalBg = document.getElementById('orderModalBg');
 const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
 
 function getApiUrl() {
-    return localStorage.getItem('baseApiUrl') || 'https://sohail.loca.lt';
+    return localStorage.getItem('baseApiUrl') || 'https://sohail-dcd82306-4436-4b08-b98e-0f343df8eafc.loca.lt';
 }
 
 function setApiUrl(url) {
@@ -35,6 +36,10 @@ saveApiUrlBtn.onclick = () => {
         fetchRecords();
     }
 };
+
+AuthenticateBtn.onclick = () => {
+    window.location.replace(getApiUrl());
+}
 
 window.onclick = function (event) {
     if (event.target === modalBg) {
