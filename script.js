@@ -148,7 +148,6 @@ Agar aap *online payment* karte hain, toh sirf *aadhi price* mein enjoy karein a
 🏦 *Payment Details:*
 Bank Name: UBL
 Account Number: ${accountNumber}
-(Use *Order ID* as payment reference)
 
 📤 *Payment krne ke baad hume slip bhej dein taake hum confirm kr saken.*
 
