@@ -36,7 +36,7 @@ closeModalBtn.onclick = () => {
 
 saveApiUrlBtn.onclick = () => {
     const accountNumber = accountNumberInput.value.trim();
-    if (url) {
+    if (accountNumber) {
         setAccountNumber(accountNumber);
         modalBg.style.display = 'none';
         modalBg.setAttribute('aria-hidden', 'true');
