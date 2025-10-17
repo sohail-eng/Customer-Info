@@ -1,22 +1,23 @@
 const settingsBtn = document.getElementById('settingsBtn');
 const modalBg = document.getElementById('modalBg');
 const closeModalBtn = document.getElementById('closeModalBtn');
-const apiUrlInput = document.getElementById('apiUrlInput');
+const accountNumberInput = document.getElementById('accountNumberInput');
 const saveApiUrlBtn = document.getElementById('saveApiUrlBtn');
 const AuthenticateBtn = document.getElementById('AuthenticateBtn');
 const orderModalBg = document.getElementById('orderModalBg');
 const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
 
-function getApiUrl() {
-    return localStorage.getItem('baseApiUrl') || 'https://sohail-dcd82306-4436-4b08-b98e-0f343df8eafc.loca.lt';
+
+function getAccountNumber(){
+    return localStorage.getItem('accountNumber') || '';
 }
 
-function setApiUrl(url) {
-    localStorage.setItem('baseApiUrl', url);
+function setAccountNumber(accountNumber) {
+    localStorage.setItem('accountNumber', accountNumber);
 }
 
 settingsBtn.onclick = () => {
-    apiUrlInput.value = getApiUrl();
+    accountNumberInput.value = getAccountNumber();
     modalBg.style.display = 'flex';
     modalBg.setAttribute('aria-hidden', 'false');
 };
@@ -27,13 +28,12 @@ closeModalBtn.onclick = () => {
 };
 
 saveApiUrlBtn.onclick = () => {
-    const url = apiUrlInput.value.trim();
+    const accountNumber = accountNumberInput.value.trim();
     if (url) {
-        setApiUrl(url);
+        setAccountNumber(accountNumber);
         modalBg.style.display = 'none';
         modalBg.setAttribute('aria-hidden', 'true');
-        showNotification("✅ API URL updated!");
-        fetchRecords();
+        showNotification("✅ Account Number saved.");
     }
 };
 
@@ -117,29 +117,36 @@ function openOrderModal(order) {
             day: 'numeric'
         });
 
-        const message = `Assalam o Alaikum ${customerName},
+        const accountNumber = getAccountNumber();
 
-Aap ka order Broadway Pizza ke saath successfully place ho chuka hai — thank you for trusting us! 🙏
+        const message = `🌟 *Assalam o Alaikum ${customerName},*
 
-📋 Order Details:
-Order ID: #${order.order_id}
-Total Amount: Rs. ${order.order_amount}
+Aap ka order *Broadway Pizza* ke saath successfully place ho chuka hai — thank you for trusting us! 🙏
 
-🍕 Selected Items:
+🍕 *Order Summary:*
+Order ID: *#${order.order_id}*
+Total Amount: *Rs. ${order.order_amount}*
+
+📦 *Selected Items:*
 ${productsText}
 
-📍 Delivery Address: ${order.delivery_address}
+📍 *Delivery Address:* ${order.delivery_address}
+⏰ *Estimated Delivery:* 30–45 minutes
 
-⏰ Estimated Delivery: Within 30-45 minutes
+🎉 *LIMITED TIME OFFER – 50% OFF!*
+Agar aap *online payment* karte hain, toh sirf *aadhi price* mein enjoy karein apna order — sirf *aaj* ke liye!
 
-🎉 Special Offer for You!
-- Agar aap online payment karte hain, toh enjoy karein *50% OFF* — sirf aaj ke din ke liye!
+💳 *After Discount:* Rs. ${order.order_amount / 2}
 
-✅ Online Payment Kryn aur Bilkul Half Price Mein Pizaz Ka Maza Lein!
+🏦 *Payment Details:*
+Bank Name: UBL
+Account Number: ${accountNumber}
+(Use *Order ID* as payment reference)
 
-Hum aap ki service ke liye committed hain. Kisi bhi sawal ke liye hume contact karein.
+📤 *Payment krne ke baad hume slip bhej dein taake hum confirm kr saken.*
 
-Shukriya Broadway Pizza ko choose karne ke liye! 🍕`;
+Broadway Pizza ko choose krne ka shukriya! Aap ka order tayar ho raha hai. 🍕  
+*Mazedar pizza aap ke raste mein hai!* 😋`;
 
         return encodeURIComponent(message);
     }
