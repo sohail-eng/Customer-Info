@@ -7,9 +7,16 @@ const AuthenticateBtn = document.getElementById('AuthenticateBtn');
 const orderModalBg = document.getElementById('orderModalBg');
 const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
 
+function getApiUrl() {
+    return localStorage.getItem('baseApiUrl') || 'https://sohail-dcd82306-4436-4b08-b98e-0f343df8eafc.loca.lt';
+}
 
 function getAccountNumber(){
     return localStorage.getItem('accountNumber') || '';
+}
+
+function setApiUrl(url) {
+    localStorage.setItem('baseApiUrl', url);
 }
 
 function setAccountNumber(accountNumber) {
