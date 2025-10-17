@@ -1,31 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>New Orders - Broadway Grabber</title>
   <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
-<body>
-<button class="settings-btn" id="settingsBtn" title="Settings" aria-label="Settings">&#9881;</button>
 
-<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-hidden="true">
+<body>
+  <button class="settings-btn" id="settingsBtn" title="Settings" aria-label="Settings">&#9881;</button>
+
+  <!-- Settings Modal -->
+  <div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document">
       <button class="close-modal" id="closeModalBtn" title="Close" aria-label="Close">&times;</button>
       <h3>API Base URL Configuration</h3>
       <input disabled type="text" id="apiUrlInput" placeholder="Enter API Base URL (e.g. http://localhost:8000)">
-      
+
       <div class="modal-button-group">
         <button id="saveApiUrlBtn">Save</button>
-        
-        <a href="https://wa.me/923176505206?text=Hi,%20I%20need%20password" target="_blank" rel="noopener noreferrer" class="modal-whatsapp-link">
+
+        <a href="https://wa.me/923176505206?text=Hi,%20I%20need%20password" target="_blank" rel="noopener noreferrer"
+          class="modal-whatsapp-link">
           📱 Get Password via WhatsApp
         </a>
-        
+
         <button id="AuthenticateBtn">Authenticate</button>
       </div>
     </div>
-</div>
+  </div>
 
   <!-- Order Details Modal -->
   <div class="modal-bg" id="orderModalBg" role="dialog" aria-modal="true" aria-hidden="true">
@@ -37,7 +41,13 @@
   </div>
 
   <h2>Recent Orders</h2>
-  <div id="records"></div>
+  <div id="records">
+    <!-- Records will be dynamically inserted here -->
+     <!-- No data, click on settings and authentication-->
+      <div class="no-data">No data available. Please click on the settings icon to authenticate.</div>
+      <!-- You can get password via whatsapp button-->
+       <div class="no-data">You can get password via <a href="https://wa.me/923176505206?text=Hi,%20I%20need%20password" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>
+  </div>
   <div id="notification" role="status" aria-live="polite">🔔 New records found!</div>
 
   <audio id="notifSound" preload="auto">
@@ -45,6 +55,7 @@
     <source src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa7b7b.mp3" type="audio/mpeg">
   </audio>
 
- <script src="./script.js"></script>
+  <script src="./script.js"></script>
 </body>
+
 </html>
