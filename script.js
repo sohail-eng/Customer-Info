@@ -7,6 +7,7 @@ const AuthenticateBtn = document.getElementById('AuthenticateBtn');
 const orderModalBg = document.getElementById('orderModalBg');
 const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
 const searchInput = document.getElementById('searchInput');
+const apiStatusIndicator = document.getElementById('api-status-indicator');
 
 let searchTimeout;
 
@@ -89,6 +90,10 @@ let currentPage = 1;
 
 async function fetchRecords(page = 1) {
     const query = searchInput.value.trim();
+    apiStatusIndicator.style.display = 'block';
+    apiStatusIndicator.className = '';
+    apiStatusIndicator.textContent = '';
+
     try {
         window.scrollTo(0, 0);
         currentPage = page;
@@ -116,10 +121,14 @@ async function fetchRecords(page = 1) {
         
         renderRecords(orders);
         renderPagination(result.num_pages, result.current_page);
+        apiStatusIndicator.className = 'success';
+        apiStatusIndicator.textContent = '✓';
 
     } catch (error) {
         console.error('Fetch error:', error);
         document.getElementById('records').innerHTML = '<p style="text-align:center;color:var(--muted);">Failed to load records. Please check your connection and API URL.</p>';
+        apiStatusIndicator.className = 'error';
+        apiStatusIndicator.textContent = '✗';
     }
 }
 
