@@ -6,6 +6,9 @@ const saveApiUrlBtn = document.getElementById('saveApiUrlBtn');
 const AuthenticateBtn = document.getElementById('AuthenticateBtn');
 const orderModalBg = document.getElementById('orderModalBg');
 const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
+const searchInput = document.getElementById('searchInput');
+
+let searchTimeout;
 
 function getApiUrl() {
     return localStorage.getItem('baseApiUrl') || 'https://sohail-dcd82306-4436-4b08-b98e-0f343df8eafc.loca.lt';
@@ -15,12 +18,20 @@ function getAccountNumber(){
     return localStorage.getItem('accountNumber') || '';
 }
 
+function getCurrentPage() {
+    return parseInt(localStorage.getItem('currentPage') || '1', 10);
+}
+
 function setApiUrl(url) {
     localStorage.setItem('baseApiUrl', url);
 }
 
 function setAccountNumber(accountNumber) {
     localStorage.setItem('accountNumber', accountNumber);
+}
+
+function setCurrentPage(page) {
+    localStorage.setItem('currentPage', page);
 }
 
 settingsBtn.onclick = () => {
@@ -64,32 +75,115 @@ closeOrderModalBtn.onclick = () => {
     orderModalBg.setAttribute('aria-hidden', 'true');
 };
 
+searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        fetchRecords(1);
+    }, 1000);
+});
+
 let previousData = null;
 let originalTitle = document.title;
 let titleTimeout;
+let currentPage = 1;
 
-async function fetchRecords() {
+async function fetchRecords(page = 1) {
+    const query = searchInput.value.trim();
     try {
-        const API_URL = getApiUrl().replace(/\/+$/, '') + '/api/recent-records';
+        window.scrollTo(0, 0);
+        currentPage = page;
+        setCurrentPage(page);
+        let API_URL = getApiUrl().replace(/\/+$/, '') + `/api/recent-records?page=${page}`;
+        if (query) {
+            API_URL += `&q=${encodeURIComponent(query)}`;
+        }
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
         const result = await response.json();
         const orders = result.orders || [];
 
-        const newDataString = JSON.stringify(orders);
-        const oldDataString = previousData === null ? null : JSON.stringify(previousData);
+        if (page === 1 && !query) {
+            const newDataString = JSON.stringify(orders);
+            const oldDataString = previousData === null ? null : JSON.stringify(previousData);
 
-        if (previousData === null || newDataString !== oldDataString) {
-            showNotification("🔔 New records found!");
-            playNotificationSound();
-            showTitleNotification("🔔 New records found!");
-            previousData = orders;
-            renderRecords(orders);
+            if (previousData === null || newDataString !== oldDataString) {
+                showNotification("🔔 New records found!");
+                playNotificationSound();
+                showTitleNotification("🔔 New records found!");
+                previousData = orders;
+            }
         }
+        
+        renderRecords(orders);
+        renderPagination(result.num_pages, result.current_page);
+
     } catch (error) {
         console.error('Fetch error:', error);
+        document.getElementById('records').innerHTML = '<p style="text-align:center;color:var(--muted);">Failed to load records. Please check your connection and API URL.</p>';
     }
 }
+
+function renderPagination(numPages, currentPage) {
+    const paginationContainer = document.getElementById('pagination-container');
+    if (!paginationContainer) return;
+
+    if (numPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    let paginationHTML = '<div class="pagination">';
+
+    // Previous Button
+    if (currentPage > 1) {
+        paginationHTML += `<button onclick="fetchRecords(${currentPage - 1})">&laquo; Prev</button>`;
+    } else {
+        paginationHTML += `<button disabled>&laquo; Prev</button>`;
+    }
+
+    // Page numbers
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(numPages, startPage + maxPagesToShow - 1);
+
+    if (endPage - startPage + 1 < maxPagesToShow) {
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    if (startPage > 1) {
+        paginationHTML += `<button onclick="fetchRecords(1)">1</button>`;
+        if (startPage > 2) {
+            paginationHTML += `<span>...</span>`;
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === currentPage) {
+            paginationHTML += `<button class="active" disabled>${i}</button>`;
+        } else {
+            paginationHTML += `<button onclick="fetchRecords(${i})">${i}</button>`;
+        }
+    }
+
+    if (endPage < numPages) {
+        if (endPage < numPages - 1) {
+            paginationHTML += `<span>...</span>`;
+        }
+        paginationHTML += `<button onclick="fetchRecords(${numPages})">${numPages}</button>`;
+    }
+
+
+    // Next Button
+    if (currentPage < numPages) {
+        paginationHTML += `<button onclick="fetchRecords(${currentPage + 1})">Next &raquo;</button>`;
+    } else {
+        paginationHTML += `<button disabled>Next &raquo;</button>`;
+    }
+
+    paginationHTML += '</div>';
+    paginationContainer.innerHTML = paginationHTML;
+}
+
 
 function openOrderModal(order) {
     const phoneRaw = (order.customer && order.customer.phone) || '';
@@ -176,6 +270,14 @@ Broadway Pizza ko choose krne ka shukriya! Aap ka order tayar ho raha hai. 🍕
         ? `<a href="${mapLink}" target="_blank" rel="noopener noreferrer" class="modal-link">📍 ${order.delivery_address}</a>`
         : `📍 No address`;
 
+    const primaryAddress = (order.city && order.user_area) ? `${order.city}, ${order.user_area}` : '';
+    let primaryAddressLink = '';
+    if (primaryAddress) {
+        const encodedPrimary = encodeURIComponent(primaryAddress);
+        const mapLinkPrimary = `https://www.google.com/maps/search/?api=1&query=${encodedPrimary}`;
+        primaryAddressLink = `<a href="${mapLinkPrimary}" target="_blank" rel="noopener noreferrer" class="modal-link">📍 ${primaryAddress}</a>`;
+    }
+
     const itemsHTML = order.items
         .map(item => `<div style="margin: 8px 0; padding: 8px; background: #f5f5f5; border-radius: 4px;">
             <strong>${item.product_name}</strong> <span style="color: #666; font-size: 0.9em;">(${item.category_name})</span><br>
@@ -198,6 +300,11 @@ Broadway Pizza ko choose krne ka shukriya! Aap ka order tayar ho raha hai. 🍕
                 <span class="detail-label">Address:</span>
                 <span class="detail-value">${addressLink}</span>
             </div>
+            ${primaryAddressLink ? `
+            <div class="detail-row">
+                <span class="detail-label">Primary Address:</span>
+                <span class="detail-value">${primaryAddressLink}</span>
+            </div>` : ''}
             <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 12px 0;">
             <div class="detail-row">
                 <span class="detail-label">Items Ordered:</span>
@@ -267,12 +374,24 @@ function renderRecords(orders) {
             ? `<a href="${link}" target="_blank" rel="noopener noreferrer" aria-label="View address on Google Maps" style="color:inherit;text-decoration:underline;">📍 ${order.delivery_address}</a>`
             : `📍 No address`;
 
+        const primaryAddress = (order.city && order.user_area) ? `${order.city}, ${order.user_area}` : '';
+        let primary_address_element = '';
+        if (primaryAddress) {
+            const encodedPrimary = encodeURIComponent(primaryAddress);
+            const primaryLink = `https://www.google.com/maps/search/?api=1&query=${encodedPrimary}`;
+            primary_address_element = `
+                <div class="order-address">
+                    Primary Address: <a href="${primaryLink}" target="_blank" rel="noopener noreferrer" aria-label="View address on Google Maps" style="color:inherit;text-decoration:underline;">${primaryAddress}</a>
+                </div>`;
+        }
+
         return `
 <div class="order-card" role="button" tabindex="0" aria-label="Order ${order.order_id}, click for details" style="cursor: pointer;">
 <div class="order-info">
 <div class="order-id">Order #${order.order_id}</div>
 <div class="order-amount">💸 Amount: <b>Rs. ${order.order_amount}</b></div>
 <div class="order-address">${location_element}</div>
+${primary_address_element}
 </div>
 <div class="customer-info">
 <div class="customer-name">👤 ${(order.customer && order.customer.name) || 'Unknown'}</div>
@@ -330,5 +449,4 @@ if (baseUrl) {
     window.location.replace(cleanUrl);
 }
 
-fetchRecords();
-setInterval(fetchRecords, 20000);
+fetchRecords(getCurrentPage());

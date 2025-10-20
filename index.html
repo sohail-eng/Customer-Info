@@ -39,7 +39,10 @@
     </div>
   </div>
 
-  <h2>Recent Orders</h2>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by Name, Phone, or Address...">
+  </div>
+  <h2>Orders</h2>
   <div id="records">
     <!-- Records will be dynamically inserted here -->
     <div id="website-password-block" class="wp-block" aria-live="polite">
@@ -63,6 +66,7 @@
       <button id="AuthenticateBtn">Authenticate</button>
     </div>
   </div>
+  <div id="pagination-container"></div>
   <div id="notification" role="status" aria-live="polite">🔔 New records found!</div>
 
   <audio id="notifSound" preload="auto">
