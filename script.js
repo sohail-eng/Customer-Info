@@ -126,7 +126,7 @@ async function fetchRecords(page = 1) {
 
     } catch (error) {
         console.error('Fetch error:', error);
-        document.getElementById('records').innerHTML = '<p style="text-align:center;color:var(--muted);">Failed to load records. Please check your connection and API URL.</p>';
+        // document.getElementById('records').innerHTML = '<p style="text-align:center;color:var(--muted);">Failed to load records. Please check your connection and API URL.</p>';
         apiStatusIndicator.className = 'error';
         apiStatusIndicator.textContent = '✗';
     }
