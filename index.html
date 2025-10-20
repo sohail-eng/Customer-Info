@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>New Orders - Broadway Grabber</title>
   <link rel="stylesheet" type="text/css" href="./style.css">
+  <link rel="stylesheet" type="text/css" href="./authenticate.css">
 </head>
 
 <body>
@@ -43,10 +44,29 @@
   <h2>Recent Orders</h2>
   <div id="records">
     <!-- Records will be dynamically inserted here -->
-     <!-- No data, click on settings and authentication-->
-      <div class="no-data">No data available. Please click on the settings icon to authenticate.</div>
-      <!-- You can get password via whatsapp button-->
-       <div class="no-data">You can get password via <a href="https://wa.me/923176505206?text=Hi,%20I%20need%20password" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>
+    <div id="website-password-block" class="wp-block" aria-live="polite">
+      <h3>Website Access</h3>
+      <div class="wp-row">
+        <label for="website-password" class="sr-only">Website password (IP)</label>
+        <pre id="website-password" class="wp-password">Loading…</pre>
+        <button id="copy-password" class="wp-btn" title="Copy password">📋</button>
+      </div>
+
+      <div class="wp-actions">
+        <!-- No Settings button here -->
+
+        <!-- WhatsApp fallback -->
+        <a id="whatsapp-link"
+          href="https://wa.me/923176505206?text=Hi,%20I%20need%20password"
+          target="_blank" rel="noopener noreferrer" class="wp-link">
+          📱 Get Password via WhatsApp
+        </a>
+      </div>
+
+      <div id="wp-message" class="wp-message" aria-hidden="false">
+        Please click on the <strong>Settings</strong> button at the top right corner of the website and click on the Authenticate button and enter the password to authenticate.
+      </div>
+    </div>
   </div>
   <div id="notification" role="status" aria-live="polite">🔔 New records found!</div>
 
@@ -56,6 +76,7 @@
   </audio>
 
   <script src="./script.js"></script>
+  <script src="./authenticate.js"></script>
 </body>
 
 </html>
