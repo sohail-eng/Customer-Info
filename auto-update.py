@@ -24,14 +24,14 @@ def main():
 
     try:
         subprocess.run(["git", "add", file_path], check=True)
-        print("Staged the updated tunnel password file.")
+        print("Staged the updated website password file.")
 
-        commit_msg = f"Update tunnel password to '{new_password}'"
+        commit_msg = f"Update website password to '{new_password}'"
         subprocess.run(["git", "commit", "-m", commit_msg], check=True)
-        print("Committed the updated tunnel password.")
+        print("Committed the updated website password.")
 
         subprocess.run(["git", "push"], check=True)
-        print("Pushed the updated tunnel password to remote repo.")
+        print("Pushed the updated website password to remote repo.")
 
     except subprocess.CalledProcessError as e:
         print(f"Git operation failed: {e}")
