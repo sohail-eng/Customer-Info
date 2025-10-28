@@ -267,7 +267,7 @@ Broadway Pizza ko choose krne ka shukriya! Aap ka order tayar ho raha hai. 🍕
     const mapLink = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 
     // const whatsappMessage = generateWhatsAppMessage(order);
-    const whatsappMessage = `🌟 *Assalam o Alaikum ${customerName},*  
+    const whatsappMessage = `🌟 *Assalam o Alaikum ${order,customer.name},*  
 
 Umeed hai aap bilkul theek hain 😊  
 Aaj ${order.city} ki hawa bhi thodi khush lag rahi hai —  
