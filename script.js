@@ -270,11 +270,11 @@ Broadway Pizza ko choose krne ka shukriya! Aap ka order tayar ho raha hai. 🍕
     const whatsappMessage = `🌟 *Assalam o Alaikum ${customerName},*  
 
 Umeed hai aap bilkul theek hain 😊  
-Aaj ${city} ki hawa bhi thodi khush lag rahi hai —  
-shayad is liye ke ${area} mein aap jaise positive log rehte hain 💫  
+Aaj ${order.city} ki hawa bhi thodi khush lag rahi hai —  
+shayad is liye ke ${order.customer.delivery_address} mein aap jaise positive log rehte hain 💫  
 
 Bas yehi dua hai ke aap ka har din muskurahat aur sukoon se bhara rahe.  
-Khush rahiye, ${customerName}! 🌸`;
+Khush rahiye, ${order.customer.name}! 🌸`;
 
     const waLink = waDigits
         ? `<a href="https://wa.me/${waDigits}?text=${whatsappMessage}" target="_blank" rel="noopener noreferrer" class="modal-link">🟢 WhatsApp</a>`
