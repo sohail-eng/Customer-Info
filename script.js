@@ -266,7 +266,16 @@ Broadway Pizza ko choose krne ka shukriya! Aap ka order tayar ho raha hai. 🍕
     const encoded = encodeURIComponent(order.delivery_address || '');
     const mapLink = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 
-    const whatsappMessage = generateWhatsAppMessage(order);
+    // const whatsappMessage = generateWhatsAppMessage(order);
+    const whatsappMessage = `🌟 *Assalam o Alaikum ${customerName},*  
+
+Umeed hai aap bilkul theek hain 😊  
+Aaj ${city} ki hawa bhi thodi khush lag rahi hai —  
+shayad is liye ke ${area} mein aap jaise positive log rehte hain 💫  
+
+Bas yehi dua hai ke aap ka har din muskurahat aur sukoon se bhara rahe.  
+Khush rahiye, ${customerName}! 🌸`;
+
     const waLink = waDigits
         ? `<a href="https://wa.me/${waDigits}?text=${whatsappMessage}" target="_blank" rel="noopener noreferrer" class="modal-link">🟢 WhatsApp</a>`
         : '';
