@@ -267,7 +267,7 @@ Broadway Pizza ko choose krne ka shukriya! Aap ka order tayar ho raha hai. 🍕
     const mapLink = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 
     // const whatsappMessage = generateWhatsAppMessage(order);
-    const whatsappMessage = `🌟 *Assalam o Alaikum ${order.customer.name},*  
+    const message = `🌟 *Assalam o Alaikum ${order.customer.name},*  
 
 Umeed hai aap bilkul theek hain 😊  
 Aaj ${order.city} ki hawa bhi thodi khush lag rahi hai —  
@@ -275,6 +275,8 @@ shayad is liye ke ${order.customer.delivery_address} mein aap jaise positive log
 
 Bas yehi dua hai ke aap ka har din muskurahat aur sukoon se bhara rahe.  
 Khush rahiye, ${order.customer.name}! 🌸`;
+
+    const whatsappMessage = encodeURIComponent(message);
 
     const waLink = waDigits
         ? `<a href="https://wa.me/${waDigits}?text=${whatsappMessage}" target="_blank" rel="noopener noreferrer" class="modal-link">🟢 WhatsApp</a>`
